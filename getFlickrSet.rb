@@ -28,10 +28,11 @@ def getPhotoHTML(photoid)
 
 	camera = exif['camera']
 
-	exposure, f_number, iso, focal, lensModel, lensType, lens = ""
+	exposure, exposureR, f_number, iso, focal, lensModel, lensType, lens = ""
 
 	exif['exif'].each do | each_exif |
 		exposure  = each_exif['clean'] if each_exif['tag'] == 'ExposureTime'
+		exposureR = each_exif['raw']   if each_exif['tag'] == 'ExposureTime'
 		f_number  = each_exif['clean'] if each_exif['tag'] == 'FNumber'
 		iso       = each_exif['raw']   if each_exif['tag'] == 'ISO'
 		focal     = each_exif['clean'] if each_exif['tag'] == 'FocalLength'
@@ -39,7 +40,14 @@ def getPhotoHTML(photoid)
 		lensType  = each_exif['raw']   if each_exif['tag'] == 'LensType'
 	end
 
-	lens = (lensModel == "" ) ? lensType : lensModel
+	if (exposure == nil) then
+		exposure = exposureR
+		if (exposure != nil) then
+			exposure = exposure + " sec"
+		end
+	end
+
+	lens = (lensModel == nil ) ? lensType : lensModel
 
 	if (lens != nil || lens != "") then
 		lens = "(" + lens + ")"
