@@ -24,6 +24,14 @@ def getPhotoHTML(photoid)
 	src_url = FlickRaw.url(info)
 	url = FlickRaw.url_photopage(info)
 
+	license = ""
+	license_code = info.license
+	license_list = flickr.photos.licenses.getInfo
+
+	license_list['license'].each do | each_license |
+		license = each_license['name'] if each_license['id'] == license_code
+	end
+
 	exif = flickr.photos.getExif(:photo_id => photoid)
 
 	camera = exif['camera']
@@ -49,12 +57,12 @@ def getPhotoHTML(photoid)
 
 	lens = (lensModel == nil ) ? lensType : lensModel
 
-	if (lens != nil || lens != "") then
+	if (lens != nil && lens != "") then
 		lens = "(" + lens + ")"
 	end
 
 	exif_content = "#{camera} #{lens}<br />#{focal}, #{f_number}, ISO #{iso}, #{exposure}"
-	content = "<a href=\"#{url}\" title=\"#{title} by #{username}, on Flickr\" target=\"_blank\"><img src=\"#{src_url}\" width=\"500\" height=\"333\" alt=\"#{title}\"></a><br />#{title} by <a href=\"#{profile_url}\">#{username}</a>, on Flickr<br /><div class=\"flickr-exif\">#{exif_content}</div><br />\n\n"
+	content = "<a href=\"#{url}\" title=\"#{title} by #{username}, on Flickr\" target=\"_blank\"><img src=\"#{src_url}\" width=\"500\" height=\"333\" alt=\"#{title}\"></a><br />#{title} by <a href=\"#{profile_url}\">#{username}</a>, on Flickr<br /><div class=\"flickr-exif\">#{exif_content}</div>(#{license})<br />\n\n"
 
 	puts content
 end
